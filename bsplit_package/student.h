@@ -7,53 +7,39 @@ template <typename KeyT,
 CP::map_bst<KeyT,MappedT,CompareT> CP::map_bst<KeyT,MappedT,CompareT>::split(KeyT val) {
   //your code here
   CP::map_bst<KeyT,MappedT,CompareT> result;
-  node* root1 = mRoot;
-  node* root2 = result.mRoot;
-  node* ptr1 = root1;
-  node* ptr2 = root2;
-  while(ptr1!=NULL){
-    int cmp = compare(ptr1->data.first, val);
-    if(cmp >= 0){
-      // cut this node from this
-      node* parent = ptr1->parent;
-      ptr1->parent = NULL;
-      if(ptr2==NULL){
-        root2 = ptr1;
-        ptr2 = root2;
+  while(mRoot != NULL){
+    if(compare(mRoot->data.first, val) != -1){
+      if(result.mRoot == NULL){
+        result.mRoot = mRoot;
+        mRoot = mRoot->parent;
+        result.mRoot->parent = NULL;
+      }else{
+        result.mRoot->left = mRoot;
+        mRoot = mRoot->parent;
+        result.mRoot->left->parent = result.mRoot;
+        result.mRoot = result.mRoot->left;
       }
-      else{
-        ptr2->left = ptr1;
-        ptr1->parent = ptr2;
-        ptr2 = ptr2->left;
-      }
-      ptr1 = parent;
-      if(ptr1!=NULL) ptr1->right = NULL;
-      while(ptr2!=NULL){
-        int cmp2 = compare(ptr2->data.first, val);
-        if(cmp2 == -1){
-          node* parent2 = ptr2->parent;
-          ptr2->parent = NULL;
-          if(ptr1==NULL){
-            root1 = ptr2;
-            ptr1 = root1;
-          }else{
-            ptr1->right = ptr2;
-            ptr2->parent = ptr1;
-            ptr1 = ptr1->right;
-          }
-          ptr2 = parent2;
-          if(ptr2!=NULL) ptr2->left = NULL;
-          break;
+      if(mRoot != NULL) mRoot->right = NULL;
+      if(result.mRoot->left != NULL){
+        if(mRoot == NULL){
+          mRoot = result.mRoot->left;
+          result.mRoot->left = NULL;
+          mRoot->parent = NULL;
         }else{
-          ptr2 = ptr2->left;
+          mRoot->right = result.mRoot->left;
+          result.mRoot->left = NULL;
+          mRoot->right->parent = mRoot;
+          mRoot = mRoot->right;
         }
       }
     }else{
-      ptr1=ptr1->right;
+      if(mRoot->right == NULL) break;
+      mRoot = mRoot->right;
     }
   }
-  result.mRoot = root2;
-  mRoot = root1;
+
+  while(mRoot != NULL and mRoot->parent != NULL) mRoot = mRoot->parent;
+  while(result.mRoot != NULL and result.mRoot->parent != NULL) result.mRoot = result.mRoot->parent;
 
   return result;
 }

@@ -35,7 +35,7 @@ int main() {
   // v.push_back(60);
   // v.push_back(90);
   // v.push_back(100);
-  std::reverse(v.begin(),v.end());
+  // std::reverse(v.begin(),v.end());
 
 
   // add value from v to m
